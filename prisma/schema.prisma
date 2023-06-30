@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ model User {
+   id    Int     @id @default(autoincrement())
+   name  String
+   email String  @unique
+   password String
+   birthDate DateTime
+   weights WeightsOnUsers[]
+ }
+
+model Question{
+id    Int     @id @default(autoincrement())
+query String
+answer String
+category Category @relation(fields: [categoryId],references: [id],onDelete: Cascade)
+categoryId   Int
+}
+
+model Category{
+  id    Int     @id @default(autoincrement())
+  name String
+  questions Question[]
+}
+
+
+model Message{
+  id    Int     @id
+  message String
+}
+
+// 中間テーブル
+model WeightsOnUsers{
+ user User  @relation(fields: [userId], references: [id])
+ userId Int
+ weight Weight @relation(fields: [weightId], references: [id])
+ weightId Int
+
+@@id([userId,weightId])
+}
+model Weight{
+  id    Int     @id @default(autoincrement())
+  createdAt DateTime
+  weight Int
+  weights WeightsOnUsers[]
+}
